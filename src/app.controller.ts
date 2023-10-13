@@ -10,6 +10,7 @@ import {
   ParseUUIDPipe,
   ParseEnumPipe,
 } from '@nestjs/common';
+import { CreateReportDto } from './dtos/report.dto';
 import { ReportType } from 'src/data';
 // import { v4 as uuid } from 'uuid';
 import { AppService } from './app.service';
