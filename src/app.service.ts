@@ -6,6 +6,10 @@ interface Report {
   amount: number;
   source: string;
 }
+interface UbdateReport {
+  amount?: number;
+  source?: string;
+}
 
 @Injectable()
 export class AppService {
@@ -29,7 +33,7 @@ export class AppService {
     data.report.push(newReport);
     return newReport;
   }
-  editReport(type: string, id: string, body: Report) {
+  editReport(type: string, id: string, body: UbdateReport) {
     const reportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
     const reportToUpdate = data.report
