@@ -15,13 +15,22 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import RouteLayout from "./layouts/RouteLayout";
 import HomePages from "./pages/HomePages";
-import client from "./apolloClient";
+import { tokenEmitter, getClient } from "./apolloClient";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
 	throw new Error("Missing Publishable Key");
 }
+
+let client = getClient();
+
+// Listen for token changes
+tokenEmitter.on('tokenChanged', (newClient) => {
+    client = newClient;
+    // You can now use the updated client
+    console.log('Apollo Client updated:', client);
+});
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 	return (
