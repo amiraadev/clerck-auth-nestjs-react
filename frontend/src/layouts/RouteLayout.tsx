@@ -3,7 +3,8 @@
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useProfileStore } from "../stores/profileStore";
-import { useAuth, useSession } from "@clerk/clerk-react";
+// import { useAuth, useSession } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/clerk-react";
 import { useQuery } from "@apollo/client";
 import { LoggedInQuery, LoggedInQueryVariables } from "../gql/graphql";
 
