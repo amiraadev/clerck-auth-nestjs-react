@@ -9,12 +9,10 @@ import { LoggedInQuery, LoggedInQueryVariables, Query } from "../gql/graphql";
 
 import { UserButton } from "@clerk/clerk-react";
 import { LOGGED_IN_QUERY } from "../graphql/queries/loggedIn";
-import { useTokenStore } from "../stores/tokenStore";
 
 function RouteLayout() {
 	const profile = useProfileStore((state) => state.profile);
 	const setProfile = useProfileStore((state) => state.setProfile);
-
 
 	// const token = useTokenStore((state) => state.token);
 	// const setToken = useTokenStore((state) => state.setToken);
@@ -22,48 +20,35 @@ function RouteLayout() {
 	const { session } = useSession();
 	const { isSignedIn } = useAuth();
 
-	// const cookie = `; ${document.cookie}`;
-	// const parts = cookie.split(`; ${"__session"}=`);
-
-	// let token;
-	// if (parts.length === 2) token = parts.pop()?.split(";").shift();
-
-	// // console.log({ token1: token });
-	// useEffect(() => {
-	// 	console.log("token");
-	// 	const CookieToken = cookie.split(`; ${"__session"}=`).pop()?.split(";").shift()
-	// 	console.log({ CookieToken });
-	// }, [cookie]);
-
-
-
-	// const { loading, error, data } = useQuery(LOGGED_IN_QUERY);
-
-	// useEffect(() => {
-	// 	const createProfileFn = async () => {
-	// 		if (data) {
-	// 			const loggedinMessage = data.getServers;
-	// 			console.log("message:", loggedinMessage);
-	// 		}
-	// 	};
-
-	// 	createProfileFn();
-	// }, [session?.user, profile?.id]);
-
-	const { data, isLoading, error } = useQuery<
+	const { data, isLoading, error, refetch } = useQuery<
 		LoggedInQuery,
 		LoggedInQueryVariables
-	>(LOGGED_IN_QUERY);
+	>(LOGGED_IN_QUERY, {
+		fetchPolicy: "network-only", // Ensure data is fetched from network
+	});
 
 	const test = async () => {
+		console.log("Button clicked"); // Check if button click is registered
+
 		const logMessage = await data?.loggedIn;
 		console.log("logMessage", logMessage);
 	};
 
 	useEffect(() => {
+		console.log("Query loading:", isLoading);
+		console.log("Query data:", data);
+		if (!isLoading && data) {
+			test();
+		}
+	}, [isLoading, data]);
+
+	useEffect(() => {
 		if (!isSignedIn) setProfile(null);
 	}, [isSignedIn, setProfile]);
 
+	const handleClick = () => {
+		refetch(); // Retry the query
+	};
 	return (
 		<div>
 			<UserButton />
@@ -73,6 +58,12 @@ function RouteLayout() {
 					test();
 				}}>
 				click here
+			</button>
+			<button
+				onClick={() => {
+					handleClick();
+				}}>
+				Refech
 			</button>
 			{isLoading && <p>Loading profile...</p>}
 			{error && <p>Error fetching profile: {error.message}</p>}

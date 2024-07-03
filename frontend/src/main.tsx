@@ -4,18 +4,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
-import {
-	ClerkProvider,
-	RedirectToSignIn,
-	SignedIn,
-	SignedOut,
-} from "@clerk/clerk-react";
+import { ClerkProvider } from "@clerk/clerk-react";
 import { ApolloProvider } from "@apollo/client";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import RouteLayout from "./layouts/RouteLayout";
-import HomePages from "./pages/HomePages";
 import { tokenEmitter, getClient } from "./apolloClient";
+import App from "./App";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -26,50 +19,18 @@ if (!PUBLISHABLE_KEY) {
 let client = getClient();
 
 // Listen for token changes
-tokenEmitter.on('tokenChanged', (newClient) => {
-    client = newClient;
-    // You can now use the updated client
-    console.log('Apollo Client updated:', client);
+tokenEmitter.on("tokenChanged", (newClient) => {
+	client = newClient;
+	// You can now use the updated client
+	// console.log('Apollo Client updated:', client);
 });
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-	return (
-		<>
-			<SignedIn>{children}</SignedIn>
-			<SignedOut>
-				<RedirectToSignIn />
-			</SignedOut>
-		</>
-	);
-};
-
-const RouterComponent = () => {
-	return (
-		<ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
-			<Routes>
-				<Route path='' element={<RouteLayout />}>
-					<Route
-						index
-						element={
-							<ProtectedRoute>
-								<HomePages />
-							</ProtectedRoute>
-						}
-					/>
-				</Route>
-			</Routes>
-		</ClerkProvider>
-	);
-};
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
-		<ApolloProvider client={client}>
-				<BrowserRouter>
-					<RouterComponent />
-				</BrowserRouter>
-		</ApolloProvider>
+		<ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+			<ApolloProvider client={client}>
+				<App />
+			</ApolloProvider>
+		</ClerkProvider>
 	</React.StrictMode>
 );
-
-export default RouterComponent;

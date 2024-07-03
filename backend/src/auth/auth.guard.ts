@@ -15,18 +15,17 @@ export class GraphqlAuthGuard implements CanActivate {
     const gqlCtx = context.getArgByIndex(2);
     const request: Request = gqlCtx.req;
     console.log('you are in the guard');
-    console.log({headers:request.headers});
-
     const token = this.extractToken(request);
 
     if (!token) throw new UnauthorizedException('Not authorized!');
-
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         publicKey: process.env.JWT_PUBLIC_KEY,
         algorithms: ['RS256'],
       });
       request['profile'] = payload;
+      console.log(payload);
+      
     } catch (err) {
       throw new UnauthorizedException('Invalid Token!');
     }
