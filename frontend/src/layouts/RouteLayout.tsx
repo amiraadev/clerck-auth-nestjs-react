@@ -5,22 +5,22 @@ import { Outlet } from "react-router-dom";
 import { useProfileStore } from "../stores/profileStore";
 import { useAuth, useSession } from "@clerk/clerk-react";
 import { useQuery } from "@apollo/client";
-import { LoggedInQuery, LoggedInQueryVariables, Query } from "../gql/graphql";
+import { LoggedInQuery, LoggedInQueryVariables } from "../gql/graphql";
 
 import { UserButton } from "@clerk/clerk-react";
 import { LOGGED_IN_QUERY } from "../graphql/queries/loggedIn";
 
 function RouteLayout() {
-	const profile = useProfileStore((state) => state.profile);
+	// const profile = useProfileStore((state) => state.profile);
 	const setProfile = useProfileStore((state) => state.setProfile);
 
 	// const token = useTokenStore((state) => state.token);
 	// const setToken = useTokenStore((state) => state.setToken);
 
-	const { session } = useSession();
+	// const { session } = useSession();
 	const { isSignedIn } = useAuth();
 
-	const { data, isLoading, error, refetch } = useQuery<
+	const { data, loading, error, refetch } = useQuery<
 		LoggedInQuery,
 		LoggedInQueryVariables
 	>(LOGGED_IN_QUERY, {
@@ -35,12 +35,12 @@ function RouteLayout() {
 	};
 
 	useEffect(() => {
-		console.log("Query loading:", isLoading);
+		console.log("Query loading:", loading);
 		console.log("Query data:", data);
-		if (!isLoading && data) {
+		if (!loading && data) {
 			test();
 		}
-	}, [isLoading, data]);
+	}, [loading, data]);
 
 	useEffect(() => {
 		if (!isSignedIn) setProfile(null);
@@ -65,7 +65,7 @@ function RouteLayout() {
 				}}>
 				Refech
 			</button>
-			{isLoading && <p>Loading profile...</p>}
+			{loading && <p>Loading profile...</p>}
 			{error && <p>Error fetching profile: {error.message}</p>}
 		</div>
 	);

@@ -7,8 +7,6 @@ import { HttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import EventEmitter from "eventemitter3";
 
-import jwt from "jsonwebtoken";
-
 // Create an EventEmitter instance
 const tokenEmitter = new EventEmitter();
 

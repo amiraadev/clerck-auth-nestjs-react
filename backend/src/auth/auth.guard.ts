@@ -13,8 +13,15 @@ export class GraphqlAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext) {
     const gqlCtx = context.getArgByIndex(2);
-    const request: Request = gqlCtx.req;
-    console.log('you are in the guard');
+    // const request: Request = gqlCtx.req;
+    let request: Request;
+
+    if (context.getType() === 'http') {
+      request = context.switchToHttp().getRequest();
+    } else {
+      request = gqlCtx.req;
+    }
+
     const token = this.extractToken(request);
 
     if (!token) throw new UnauthorizedException('Not authorized!');
@@ -25,7 +32,6 @@ export class GraphqlAuthGuard implements CanActivate {
       });
       request['profile'] = payload;
       console.log(payload);
-      
     } catch (err) {
       throw new UnauthorizedException('Invalid Token!');
     }
